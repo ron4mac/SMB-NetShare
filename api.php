@@ -116,7 +116,7 @@ function smbRun(array $cfg, string $command): array {
 		'--password', $cfg['password'],
 		'--command', $command,
 	];
-
+//file_put_contents('SMB.txt',print_r($args,true),FILE_APPEND);
 	// Use proc_open so we can capture stdout + stderr separately
 	$descriptors = [
 		0 => ['pipe', 'r'],	// stdin
