@@ -9,311 +9,329 @@
 	<script src="script.js" defer></script>
 </head>
 <body>
-<!-- BACKEND CONFIG BAR -->
-<div class="backend-bar">
-	<label>BACKEND</label>
-	<input type="text" id="backendUrl" value="api.php" placeholder="http://host/api.php" style="width:300px">
-	<span id="backendStatus">not checked</span>
-	<button class="btn sm" onclick="checkHealth()" style="padding:2px 8px;font-size:9px;">ping</button>
-</div>
-<!-- TOP BAR -->
-<div class="topbar">
-	<div class="logo">
-		<div class="logo-icon">
-			<svg viewBox="0 0 24 24" fill="white">
-				<path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/>
-			</svg>
+	<!-- BACKEND CONFIG BAR -->
+	<div class="backend-bar">
+		<label>BACKEND</label>
+		<input type="text" id="backendUrl" value="api.php" placeholder="http://localhost:3001 or http://host/api.php" style="width:300px">
+		<span id="backendStatus">not checked</span>
+		<button class="btn sm" onclick="checkHealth()" style="padding:2px 8px;font-size:9px;">ping</button>
+	</div>
+	<!-- TOP BAR -->
+	<div class="topbar">
+		<div class="logo">
+			<div class="logo-icon">
+				<svg viewBox="0 0 24 24" fill="white">
+					<path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/>
+				</svg>
+			</div>
+			NETSHARE
 		</div>
-		NETSHARE
-	</div>
-	<div class="conn-bar">
-		<div class="status-dot" id="statusDot"></div>
-		<span>//</span>
-		<input type="text" id="hostDisplay" placeholder="not connected" readonly style="cursor:default;color:var(--text-muted)">
-	</div>
-	<button class="btn primary" onclick="openModal('connectModal')">
-		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
-			<path d="M5 12.55a11 11 0 0114.08 0"/>
-			<path d="M1.42 9a16 16 0 0121.16 0"/>
-			<path d="M8.53 16.11a6 6 0 016.95 0"/>
-			<circle cx="12" cy="20" r="1"/>
-		</svg>
-		Connect
-	</button>
-	<div class="topbar-actions">
-		<button class="btn sm" id="topNewFolderBtn" onclick="openNewFolder()" disabled>
+		<div class="conn-bar">
+			<div class="status-dot" id="statusDot"></div>
+			<span>//</span>
+			<input type="text" id="hostDisplay" placeholder="not connected" readonly style="cursor:default;color:var(--text-muted)">
+		</div>
+		<button class="btn primary" onclick="openModal('connectModal')">
 			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
-				<path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
-				<line x1="12" y1="11" x2="12" y2="17"/>
-				<line x1="9" y1="14" x2="15" y2="14"/>
-			</svg>
-			New Folder
-		</button>
-		<button class="btn sm" id="topUploadBtn" onclick="triggerUpload()" disabled>
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
-				<polyline points="16 16 12 12 8 16"/>
-				<line x1="12" y1="12" x2="12" y2="21"/>
-				<path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/>
-			</svg>
-			Upload
-		</button>
-		<button class="btn sm" id="topDisconnectBtn" onclick="disconnect()" disabled style="color:var(--red)">Disconnect</button>
-	</div>
-</div>
-<!-- LAYOUT -->
-<div class="layout">
-	<!-- SIDEBAR -->
-	<div class="sidebar">
-		<div class="sidebar-section">
-			<div class="sidebar-label">Shares</div>
-			<div id="shareList">
-				<div style="padding:16px;font-size:11px;color:var(--text-muted);font-family:var(--mono)">Connect to see shares</div>
-			</div>
-			<div class="sidebar-add" onclick="openModal('connectModal')">
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-					<line x1="12" y1="5" x2="12" y2="19"/>
-					<line x1="5" y1="12" x2="19" y2="12"/>
-				</svg>
-				Add share…
-			</div>
-		</div>
-		<div class="sidebar-section" id="recentSection" style="display:none">
-			<div class="sidebar-label">Recent</div>
-			<div id="recentList"></div>
-		</div>
-	</div>
-	<!-- MAIN PANEL -->
-	<div class="main">
-		<div class="breadcrumb" id="breadcrumb">
-			<span style="color:var(--text-muted)">No share selected</span>
-		</div>
-		<div class="toolbar">
-			<button class="btn sm" id="backBtn" onclick="navigateBack()" disabled>
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
-					<polyline points="15 18 9 12 15 6"/>
-				</svg>
-			</button>
-			<button class="btn sm" id="refreshBtn" onclick="refreshDir()" disabled>
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
-					<polyline points="23 4 23 10 17 10"/>
-					<polyline points="1 20 1 14 7 14"/>
-					<path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
-				</svg>
-			</button>
-			<div class="toolbar-sep"></div>
-			<button class="btn sm" id="newFolderBtn" onclick="openNewFolder()" disabled>New Folder</button>
-			<button class="btn sm" id="uploadBtn"    onclick="triggerUpload()" disabled>Upload</button>
-			<button class="btn sm danger" id="downloadBtn" onclick="downloadSelected()" disabled>Download</button>
-			<button class="btn sm danger" id="deleteBtn"   onclick="confirmDelete()"   disabled>Delete</button>
-			<div class="toolbar-sep"></div>
-			<div style="font-family:var(--mono);font-size:10px;color:var(--text-muted);" id="sortLabel">NAME ↑</div>
-			<div class="search-box">
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-					<circle cx="11" cy="11" r="8"/>
-					<line x1="21" y1="21" x2="16.65" y2="16.65"/>
-				</svg>
-				<input type="text" placeholder="Filter files…" id="searchInput" oninput="applyFilter()">
-			</div>
-			<div class="view-toggle">
-				<div class="view-btn active" id="listViewBtn" onclick="setView('list')">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<line x1="8" y1="6" x2="21" y2="6"/>
-						<line x1="8" y1="12" x2="21" y2="12"/>
-						<line x1="8" y1="18" x2="21" y2="18"/>
-						<line x1="3" y1="6" x2="3.01" y2="6"/>
-						<line x1="3" y1="12" x2="3.01" y2="12"/>
-						<line x1="3" y1="18" x2="3.01" y2="18"/>
-					</svg>
-				</div>
-				<div class="view-btn" id="gridViewBtn" onclick="setView('grid')">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<rect x="3" y="3" width="7" height="7"/>
-						<rect x="14" y="3" width="7" height="7"/>
-						<rect x="3" y="14" width="7" height="7"/>
-						<rect x="14" y="14" width="7" height="7"/>
-					</svg>
-				</div>
-			</div>
-		</div>
-		<div class="file-area" id="fileArea"
-			ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFiles(event)"
-			oncontextmenu="showCtxMenu(event)" onclick="clearSelection(event)">
-			<div class="drop-overlay" id="dropOverlay"><span>Drop files to upload</span></div>
-			<div class="file-list-header" id="listHeader" style="display:none">
-				<div></div>
-				<div class="col sorted" id="colName"     onclick="sortBy('name')">NAME ↑</div>
-				<div class="col"        id="colExt"      onclick="sortBy('ext')">TYPE</div>
-				<div class="col"        id="colSize"     onclick="sortBy('size')">SIZE</div>
-				<div class="col"        id="colModified" onclick="sortBy('modified')">MODIFIED</div>
-			</div>
-			<div id="fileContainer">
-				<div class="empty-state">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
-						<path d="M5 12.55a11 11 0 0114.08 0"/>
-						<path d="M1.42 9a16 16 0 0121.16 0"/>
-						<path d="M8.53 16.11a6 6 0 016.95 0"/>
-						<circle cx="12" cy="20" r="1"/>
-					</svg>
-					<h3>Not Connected</h3>
-					<p>Click <strong>Connect</strong> to open a Samba share via your Node.js backend.</p>
-					<button class="btn primary sm" onclick="openModal('connectModal')" style="margin-top:4px">Connect now</button>
-				</div>
-			</div>
-		</div>
-		<div class="statusbar">
-			<div class="statusbar-stat">
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
-					<path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
-				</svg>
-				<span id="statItems">—</span>
-			</div>
-			<div class="statusbar-stat">
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
-					<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-				</svg>
-				<span id="statSelected">nothing selected</span>
-			</div>
-			<div style="margin-left:auto;display:flex;gap:16px;align-items:center">
-				<div class="statusbar-stat">SMB 2/3</div>
-				<div class="statusbar-stat" id="statServer" style="color:var(--text-muted)">offline</div>
-			</div>
-		</div>
-	</div>
-</div>
-<!-- ── CONNECT MODAL ── -->
-<div class="modal-overlay" id="connectModal">
-	<div class="modal">
-		<div class="modal-title">
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 				<path d="M5 12.55a11 11 0 0114.08 0"/>
 				<path d="M1.42 9a16 16 0 0121.16 0"/>
 				<path d="M8.53 16.11a6 6 0 016.95 0"/>
 				<circle cx="12" cy="20" r="1"/>
 			</svg>
-			Connect to Samba Share
-		</div>
-		<div class="form-row">
-			<div class="form-group">
-				<label class="form-label">Host / IP</label>
-				<input class="form-input" id="m_host" placeholder="192.168.1.10" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-			</div>
-			<div class="form-group">
-				<label class="form-label">Port</label>
-				<input class="form-input" id="m_port" value="445">
-			</div>
-		</div>
-		<div class="form-group">
-			<label class="form-label">Share Name</label>
-			<input class="form-input" id="m_share" placeholder="media" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-		</div>
-		<div class="form-row">
-			<div class="form-group">
-				<label class="form-label">Username</label>
-				<input class="form-input" id="m_user" placeholder="guest" autocomplete="username" autocorrect="off" autocapitalize="off" spellcheck="false">
-			</div>
-			<div class="form-group">
-				<label class="form-label">Password</label>
-				<input class="form-input" type="password" id="m_pass" placeholder="••••••••" autocomplete="current-password">
-			</div>
-		</div>
-		<div class="form-group">
-			<label class="form-label">Domain / Workgroup</label>
-			<input class="form-input" id="m_domain" placeholder="WORKGROUP" autocomplete="off">
-		</div>
-		<div class="form-error" id="connectError"></div>
-		<div class="progress-bar" id="connectProgress">
-			<div class="progress-fill" id="connectFill" style="width:0%"></div>
-		</div>
-		<div class="modal-actions">
-			<button class="btn" onclick="closeModal('connectModal')">Cancel</button>
-			<button class="btn primary" id="connectBtn" onclick="doConnect()">Connect</button>
+			Connect
+		</button>
+		<div class="topbar-actions">
+			<button class="btn sm" id="topNewFolderBtn" onclick="openNewFolder()" disabled>
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+					<path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
+					<line x1="12" y1="11" x2="12" y2="17"/>
+					<line x1="9" y1="14" x2="15" y2="14"/>
+				</svg>
+				New Folder
+			</button>
+			<button class="btn sm" id="topUploadBtn" onclick="triggerUpload()" disabled>
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+					<polyline points="16 16 12 12 8 16"/>
+					<line x1="12" y1="12" x2="12" y2="21"/>
+					<path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/>
+				</svg>
+				Upload
+			</button>
+			<button class="btn sm" id="topDisconnectBtn" onclick="disconnect()" disabled style="color:var(--red)">Disconnect</button>
+                        <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark mode">
+                                <!-- Moon: shown in dark mode -->
+                                <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/>
+                                </svg>
+                                <!-- Sun: shown in light mode -->
+                                <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="5"/>
+                                        <line x1="12" y1="1" x2="12" y2="3"/>
+                                        <line x1="12" y1="21" x2="12" y2="23"/>
+                                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                                        <line x1="1" y1="12" x2="3" y2="12"/>
+                                        <line x1="21" y1="12" x2="23" y2="12"/>
+                                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                                </svg>
+                        </button>
 		</div>
 	</div>
-</div>
-<!-- ── NEW FOLDER MODAL ── -->
-<div class="modal-overlay" id="newFolderModal">
-	<div class="modal" style="width:340px">
-		<div class="modal-title">
+	<!-- LAYOUT -->
+	<div class="layout">
+		<!-- SIDEBAR -->
+		<div class="sidebar">
+			<div class="sidebar-section">
+				<div class="sidebar-label">Shares</div>
+				<div id="shareList">
+					<div style="padding:16px;font-size:11px;color:var(--text-muted);font-family:var(--mono)">Connect to see shares</div>
+				</div>
+				<div class="sidebar-add" onclick="openModal('connectModal')">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<line x1="12" y1="5" x2="12" y2="19"/>
+						<line x1="5" y1="12" x2="19" y2="12"/>
+					</svg>
+					Add share…
+				</div>
+			</div>
+			<div class="sidebar-section" id="recentSection" style="display:none">
+				<div class="sidebar-label">Recent</div>
+				<div id="recentList"></div>
+			</div>
+		</div>
+		<!-- MAIN PANEL -->
+		<div class="main">
+			<div class="breadcrumb" id="breadcrumb">
+				<span style="color:var(--text-muted)">No share selected</span>
+			</div>
+			<div class="toolbar">
+				<button class="btn sm" id="backBtn" onclick="navigateBack()" disabled>
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+						<polyline points="15 18 9 12 15 6"/>
+					</svg>
+				</button>
+				<button class="btn sm" id="refreshBtn" onclick="refreshDir()" disabled>
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+						<polyline points="23 4 23 10 17 10"/>
+						<polyline points="1 20 1 14 7 14"/>
+						<path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+					</svg>
+				</button>
+				<div class="toolbar-sep"></div>
+				<button class="btn sm" id="newFolderBtn" onclick="openNewFolder()" disabled>New Folder</button>
+				<button class="btn sm" id="uploadBtn"    onclick="triggerUpload()" disabled>Upload</button>
+				<button class="btn sm danger" id="downloadBtn" onclick="downloadSelected()" disabled>Download</button>
+				<button class="btn sm danger" id="deleteBtn"   onclick="confirmDelete()"   disabled>Delete</button>
+				<div class="toolbar-sep"></div>
+				<div style="font-family:var(--mono);font-size:10px;color:var(--text-muted);" id="sortLabel">NAME ↑</div>
+				<div class="search-box">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<circle cx="11" cy="11" r="8"/>
+						<line x1="21" y1="21" x2="16.65" y2="16.65"/>
+					</svg>
+					<input type="text" placeholder="Filter files…" id="searchInput" oninput="applyFilter()">
+				</div>
+				<div class="view-toggle">
+					<div class="view-btn active" id="listViewBtn" onclick="setView('list')">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<line x1="8" y1="6" x2="21" y2="6"/>
+							<line x1="8" y1="12" x2="21" y2="12"/>
+							<line x1="8" y1="18" x2="21" y2="18"/>
+							<line x1="3" y1="6" x2="3.01" y2="6"/>
+							<line x1="3" y1="12" x2="3.01" y2="12"/>
+							<line x1="3" y1="18" x2="3.01" y2="18"/>
+						</svg>
+					</div>
+					<div class="view-btn" id="gridViewBtn" onclick="setView('grid')">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<rect x="3" y="3" width="7" height="7"/>
+							<rect x="14" y="3" width="7" height="7"/>
+							<rect x="3" y="14" width="7" height="7"/>
+							<rect x="14" y="14" width="7" height="7"/>
+						</svg>
+					</div>
+				</div>
+			</div>
+			<div class="file-area" id="fileArea"
+				ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFiles(event)"
+				oncontextmenu="showCtxMenu(event)" onclick="clearSelection(event)">
+				<div class="drop-overlay" id="dropOverlay"><span>Drop files to upload</span></div>
+				<div class="file-list-header" id="listHeader" style="display:none">
+					<div></div>
+					<div class="col sorted" id="colName"     onclick="sortBy('name')">NAME ↑</div>
+					<div class="col"        id="colExt"      onclick="sortBy('ext')">TYPE</div>
+					<div class="col"        id="colSize"     onclick="sortBy('size')">SIZE</div>
+					<div class="col"        id="colModified" onclick="sortBy('modified')">MODIFIED</div>
+				</div>
+				<div id="fileContainer">
+					<div class="empty-state">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+							<path d="M5 12.55a11 11 0 0114.08 0"/>
+							<path d="M1.42 9a16 16 0 0121.16 0"/>
+							<path d="M8.53 16.11a6 6 0 016.95 0"/>
+							<circle cx="12" cy="20" r="1"/>
+						</svg>
+						<h3>Not Connected</h3>
+						<p>Click <strong>Connect</strong> to open a Samba share via your Node.js backend.</p>
+						<button class="btn primary sm" onclick="openModal('connectModal')" style="margin-top:4px">Connect now</button>
+					</div>
+				</div>
+			</div>
+			<div class="statusbar">
+				<div class="statusbar-stat">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+						<path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
+					</svg>
+					<span id="statItems">—</span>
+				</div>
+				<div class="statusbar-stat">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+						<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+					</svg>
+					<span id="statSelected">nothing selected</span>
+				</div>
+				<div style="margin-left:auto;display:flex;gap:16px;align-items:center">
+					<div class="statusbar-stat">SMB 2/3</div>
+					<div class="statusbar-stat" id="statServer" style="color:var(--text-muted)">offline</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- ── CONNECT MODAL ── -->
+	<div class="modal-overlay" id="connectModal">
+		<div class="modal">
+			<div class="modal-title">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<path d="M5 12.55a11 11 0 0114.08 0"/>
+					<path d="M1.42 9a16 16 0 0121.16 0"/>
+					<path d="M8.53 16.11a6 6 0 016.95 0"/>
+					<circle cx="12" cy="20" r="1"/>
+				</svg>
+				Connect to Samba Share
+			</div>
+			<div class="form-row">
+				<div class="form-group">
+					<label class="form-label">Host / IP</label>
+					<input class="form-input" id="m_host" placeholder="192.168.1.10" autocorrect="off" autocapitalize="off" spellcheck="false">
+				</div>
+				<div class="form-group">
+					<label class="form-label">Port</label>
+					<input class="form-input" id="m_port" value="445">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="form-label">Share Name</label>
+				<input class="form-input" id="m_share" placeholder="media" autocorrect="off" autocapitalize="off" spellcheck="false">
+			</div>
+			<div class="form-row">
+				<div class="form-group">
+					<label class="form-label">Username</label>
+					<input class="form-input" id="m_user" placeholder="guest" autocorrect="off" autocapitalize="off" spellcheck="false">
+				</div>
+				<div class="form-group">
+					<label class="form-label">Password</label>
+					<input class="form-input" type="password" id="m_pass" placeholder="••••••••">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="form-label">Domain / Workgroup</label>
+				<input class="form-input" id="m_domain" placeholder="WORKGROUP" autocomplete="off">
+			</div>
+			<div class="form-error" id="connectError"></div>
+			<div class="progress-bar" id="connectProgress">
+				<div class="progress-fill" id="connectFill" style="width:0%"></div>
+			</div>
+			<div class="modal-actions">
+				<button class="btn" onclick="closeModal('connectModal')">Cancel</button>
+				<button class="btn primary" id="connectBtn" onclick="doConnect()">Connect</button>
+			</div>
+		</div>
+	</div>
+	<!-- ── NEW FOLDER MODAL ── -->
+	<div class="modal-overlay" id="newFolderModal">
+		<div class="modal" style="width:340px">
+			<div class="modal-title">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
+				</svg>
+				New Folder
+			</div>
+			<div class="form-group">
+				<label class="form-label">Folder Name</label>
+				<input class="form-input" id="newFolderName" placeholder="New Folder"
+					onkeydown="if(event.key==='Enter') createFolder()">
+			</div>
+			<div class="form-error" id="newFolderError"></div>
+			<div class="modal-actions">
+				<button class="btn" onclick="closeModal('newFolderModal')">Cancel</button>
+				<button class="btn primary" id="mkdirBtn" onclick="createFolder()">Create</button>
+			</div>
+		</div>
+	</div>
+	<!-- ── UPLOAD PROGRESS MODAL ── -->
+	<div class="modal-overlay" id="uploadModal">
+		<div class="modal" style="width:380px">
+			<div class="modal-title">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<polyline points="16 16 12 12 8 16"/>
+					<line x1="12" y1="12" x2="12" y2="21"/>
+					<path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/>
+				</svg>
+				Uploading Files
+			</div>
+			<div class="upload-list" id="uploadList"></div>
+			<div class="modal-actions" style="margin-top:16px">
+				<button class="btn" id="uploadDoneBtn" onclick="closeModal('uploadModal')" disabled>Close</button>
+			</div>
+		</div>
+	</div>
+	<!-- CONTEXT MENU -->
+	<div class="ctx-menu" id="ctxMenu">
+		<div class="ctx-item" onclick="ctxOpen()">
 			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-				<path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
+				<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+				<circle cx="12" cy="12" r="3"/>
 			</svg>
-			New Folder
+			Open
 		</div>
-		<div class="form-group">
-			<label class="form-label">Folder Name</label>
-			<input class="form-input" id="newFolderName" placeholder="New Folder"
-				onkeydown="if(event.key==='Enter') createFolder()">
-		</div>
-		<div class="form-error" id="newFolderError"></div>
-		<div class="modal-actions">
-			<button class="btn" onclick="closeModal('newFolderModal')">Cancel</button>
-			<button class="btn primary" id="mkdirBtn" onclick="createFolder()">Create</button>
-		</div>
-	</div>
-</div>
-<!-- ── UPLOAD PROGRESS MODAL ── -->
-<div class="modal-overlay" id="uploadModal">
-	<div class="modal" style="width:380px">
-		<div class="modal-title">
+		<div class="ctx-item" onclick="downloadSelected()">
 			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-				<polyline points="16 16 12 12 8 16"/>
-				<line x1="12" y1="12" x2="12" y2="21"/>
-				<path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/>
+				<path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+				<polyline points="7 10 12 15 17 10"/>
+				<line x1="12" y1="15" x2="12" y2="3"/>
 			</svg>
-			Uploading Files
+			Download
 		</div>
-		<div class="upload-list" id="uploadList"></div>
-		<div class="modal-actions" style="margin-top:16px">
-			<button class="btn" id="uploadDoneBtn" onclick="closeModal('uploadModal')" disabled>Close</button>
+		<div class="ctx-item" onclick="ctxRename()">
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+				<path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+			</svg>
+			Rename
+		</div>
+		<div class="ctx-sep"></div>
+		<div class="ctx-item" onclick="ctxCopyPath()">
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<rect x="9" y="9" width="13" height="13" rx="2"/>
+				<path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+			</svg>
+			Copy SMB Path
+		</div>
+		<div class="ctx-sep"></div>
+		<div class="ctx-item danger" onclick="confirmDelete()">
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<polyline points="3 6 5 6 21 6"/>
+				<path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+				<line x1="10" y1="11" x2="10" y2="17"/>
+				<line x1="14" y1="11" x2="14" y2="17"/>
+				<path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
+			</svg>
+			Delete
 		</div>
 	</div>
-</div>
-<!-- CONTEXT MENU -->
-<div class="ctx-menu" id="ctxMenu">
-	<div class="ctx-item" onclick="ctxOpen()">
-		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-			<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-			<circle cx="12" cy="12" r="3"/>
-		</svg>
-		Open
-	</div>
-	<div class="ctx-item" onclick="downloadSelected()">
-		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-			<path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-			<polyline points="7 10 12 15 17 10"/>
-			<line x1="12" y1="15" x2="12" y2="3"/>
-		</svg>
-		Download
-	</div>
-	<div class="ctx-item" onclick="ctxRename()">
-		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-			<path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
-			<path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
-		</svg>
-		Rename
-	</div>
-	<div class="ctx-sep"></div>
-	<div class="ctx-item" onclick="ctxCopyPath()">
-		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-			<rect x="9" y="9" width="13" height="13" rx="2"/>
-			<path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
-		</svg>
-		Copy SMB Path
-	</div>
-	<div class="ctx-sep"></div>
-	<div class="ctx-item danger" onclick="confirmDelete()">
-		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-			<polyline points="3 6 5 6 21 6"/>
-			<path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
-			<line x1="10" y1="11" x2="10" y2="17"/>
-			<line x1="14" y1="11" x2="14" y2="17"/>
-			<path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
-		</svg>
-		Delete
-	</div>
-</div>
-<!-- NOTIFICATIONS -->
-<div class="notifs" id="notifs"></div>
-<input type="file" id="fileUploadInput" multiple style="display:none" onchange="handleFileUpload(event)">
+	<!-- NOTIFICATIONS -->
+	<div class="notifs" id="notifs"></div>
+	<input type="file" id="fileUploadInput" multiple style="display:none" onchange="handleFileUpload(event)">
 </body>
 </html>

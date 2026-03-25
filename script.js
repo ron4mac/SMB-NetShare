@@ -608,7 +608,7 @@ async function doUpload(files) {
 	openModal('uploadModal');
 
 	const form = new FormData();
-	files.forEach(f => form.append('files[]', f));
+	files.forEach(f => form.append('files', f));
 	files.forEach((_, i) => {
 		const s = document.getElementById(`upst_${i}`);
 		if (s) {
@@ -787,6 +787,32 @@ function notify(type, msg) {
 	document.getElementById('notifs').appendChild(n);
 	setTimeout(() => n.remove(), 4000);
 }
+
+// ── THEME ───────────────────────────────────────────────────────────────────
+function applyTheme(theme) {
+	document.documentElement.setAttribute('data-theme', theme);
+	try {
+		localStorage.setItem('netshare-theme', theme);
+	} catch (_) {}
+}
+
+function toggleTheme() {
+	const current = document.documentElement.getAttribute('data-theme');
+	// If not explicitly set, detect from OS preference
+	const isDark = current === 'dark' ||
+		(!current && !window.matchMedia('(prefers-color-scheme: light)').matches);
+	applyTheme(isDark ? 'light' : 'dark');
+}
+
+// Restore saved preference on load (before first paint)
+(function () {
+	try {
+		const saved = localStorage.getItem('netshare-theme');
+		if (saved === 'dark' || saved === 'light') {
+			document.documentElement.setAttribute('data-theme', saved);
+		}
+	} catch (_) {}
+})();
 
 // ── INIT ────────────────────────────────────────────────────────────────────
 checkHealth();
